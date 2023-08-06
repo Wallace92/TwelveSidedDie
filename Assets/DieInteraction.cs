@@ -1,28 +1,35 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DieInteraction : MonoBehaviour
 {
-    private TwelveSideDieController m_twelveSideDieController;
-    private bool m_isHeld;
-    private Vector3 m_startPosition;
-    private Rigidbody m_rb;
-    private bool m_isMouseOverDie;
+    [SerializeField]
+    private float m_forceMagnitude;
 
     [SerializeField]
-    private float m_throwForce = 100f;
+    private float m_torqueStrength;
+    
     [SerializeField]
     private float m_minThrowVelocity = 1f;
+
+    [SerializeField]
+    private LayerMask m_dieLayerMask;
     
-   // private void 
+    private TwelveSideDieController m_twelveSideDieController;
 
-    private void Start()
+    private Vector3 m_startPosition;
+    private Rigidbody m_rigidbody;
+    
+    private bool m_isHeld;
+    private bool m_isReleased;
+
+    private void Awake()
     {
-        m_rb = GetComponent<Rigidbody>();
+        m_rigidbody = GetComponent<Rigidbody>();
+        m_twelveSideDieController = GetComponent<TwelveSideDieController>();
     }
-
+    
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -41,37 +48,48 @@ public class DieInteraction : MonoBehaviour
         }
     }
 
-    private void HandleMouseDown()
+    private void FixedUpdate()
     {
-        if (m_isMouseOverDie)
+        if (!m_isReleased) 
+            return;
+        
+        if (m_rigidbody.velocity.sqrMagnitude < 0.0001f && m_rigidbody.angularVelocity.sqrMagnitude < 0.0001f)
         {
-            m_isHeld = true;
-            m_rb.isKinematic = true;
-            m_startPosition = transform.position;
+            m_isReleased = false;
+            m_twelveSideDieController.StopRollDieMovement();
         }
     }
-    
-    private void StartRollDie()
+
+    private void HandleMouseDown()
     {
-        // var forceDir = Vector3.right - Vector3.up;
-        // var torqueVector = Vector3.Cross(forceDir.normalized, Vector3.down) * m_torqueStrength;
-        //
-        // m_rigidbody.AddForce(forceDir * m_forceMagnitude, ForceMode.Impulse);
-        // m_rigidbody.AddTorque(torqueVector);
-        
+        RaycastHit hit  = PerformRaycastThroughDie();
+
+        if (hit.collider != null)
+        {
+            m_isHeld = true;
+            m_rigidbody.isKinematic = true;
+            m_startPosition = transform.position;
+            Cursor.visible = false;
+        }
     }
 
     private void HandleMouseUp()
     {
         m_isHeld = false;
-        m_rb.isKinematic = false;
+        m_rigidbody.isKinematic = false;
+        
+        var throwDirection = CalculateThrowDirection();
+        var torqueVector = Vector3.Cross(throwDirection.normalized, Vector3.down) * m_torqueStrength;
 
-        Vector3 throwDirection = transform.position - m_startPosition;
-        float throwSpeed = throwDirection.magnitude;
-
-        if (throwSpeed > m_minThrowVelocity)
+        if (throwDirection.normalized.magnitude > m_minThrowVelocity)
         {
-            m_rb.AddForce(throwDirection * m_throwForce, ForceMode.Impulse);
+            m_rigidbody.AddForce(throwDirection *  throwDirection.normalized.magnitude * m_forceMagnitude, ForceMode.Impulse);
+            m_rigidbody.AddTorque(torqueVector);
+            
+            
+            m_twelveSideDieController.StartRollDieMovement();
+            
+            StartCoroutine(StopDieMovementCoroutine());
         }
         else
         {
@@ -79,27 +97,56 @@ public class DieInteraction : MonoBehaviour
         }
     }
 
-    private void OnMouseEnter()
+    private IEnumerator StopDieMovementCoroutine()
     {
-        m_isMouseOverDie = true;
+        yield return new WaitForFixedUpdate();
+
+        m_isReleased = true;
+        Cursor.visible = true;
     }
-    
-    private void OnMouseExit()
+
+    private Vector3 CalculateThrowDirection()
     {
-        m_isMouseOverDie = false;
+        var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
+        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
+        var worldPos = Camera.main.ScreenToWorldPoint(position);
+        
+        Vector3 throwDirection = worldPos - transform.position;
+        
+        return throwDirection;
     }
 
     private void HandleMouseDrag()
     {
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = Mathf.Abs(Camera.main.transform.position.z);
-        transform.position = Camera.main.ScreenToWorldPoint(mousePosition);
+        var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
+        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
+        var worldPos = Camera.main.ScreenToWorldPoint(position);
+
+        transform.position = new Vector3(worldPos.x, 2f, worldPos.z);
     }
 
+    private RaycastHit PerformRaycastThroughDie()
+    {
+        var mainCam = Camera.main;
+
+        var screenMousePosFar = new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCam.farClipPlane);
+        var screenMousePosNear = new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCam.nearClipPlane);
+
+        var worldMousePosFar = Camera.main.ScreenToWorldPoint(screenMousePosFar);
+        var worldMousePosNear = Camera.main.ScreenToWorldPoint(screenMousePosNear);
+
+        Ray ray = new Ray(worldMousePosNear, worldMousePosFar - worldMousePosNear);
+
+        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, m_dieLayerMask);
+        
+        return hit;
+    }
+    
     private void ResetCubePosition()
     {
-        m_rb.velocity = Vector3.zero;
-        m_rb.angularVelocity = Vector3.zero;
+        m_rigidbody.velocity = Vector3.zero;
+        m_rigidbody.angularVelocity = Vector3.zero;
         transform.position = m_startPosition;
+        Cursor.visible = true;
     }
 }

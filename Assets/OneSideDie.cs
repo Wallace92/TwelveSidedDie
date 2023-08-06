@@ -1,11 +1,14 @@
-using System;
 using TMPro;
 using UnityEngine;
 
 public class OneSideDie : MonoBehaviour
 {
-    public int Number => int.Parse(m_numberText);
+    public int Number => int.Parse(PlainNumber);
     
+    private string PlainNumber => m_numberText.Contains(".")
+        ? m_numberText.Replace(".", "")
+        : m_numberText;
+
     [SerializeField]
     private string m_numberText;
     
