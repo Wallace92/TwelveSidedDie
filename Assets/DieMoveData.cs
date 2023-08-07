@@ -9,7 +9,7 @@ public enum ThrowMode
 };
 
 [Serializable]
-public struct DieMoveData
+public struct DieMoveDataStruct
 {
     public ThrowMode ThrowMode;
     public float ForceMagnitude;
@@ -19,7 +19,7 @@ public struct DieMoveData
     public LayerMask DieLayerMask;
     public Vector3 StartPosition;
 
-    public DieMoveData(float forceMagnitude, 
+    public DieMoveDataStruct(float forceMagnitude, 
         float torqueStrength, 
         float minThrowVelocity, 
         Vector3 startPosition, 

@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public interface IMoveData
 {
-    
+    public DieMoveData GetData();
 }
 
 [Serializable]
-public class MoveData : IMoveData
+public struct DieMoveData
 {
     public ThrowMode ThrowMode;
     public float ForceMagnitude;
@@ -16,16 +17,81 @@ public class MoveData : IMoveData
 
     public LayerMask DieLayerMask;
     public Vector3 StartPosition;
+
+    public DieMoveData(float forceMagnitude, 
+        float torqueStrength, 
+        float minThrowVelocity, 
+        Vector3 startPosition, 
+        LayerMask dieLayerMask, 
+        ThrowMode throwMode)
+    {
+        ForceMagnitude = forceMagnitude;
+        TorqueStrength = torqueStrength;
+        MinThrowVelocity = minThrowVelocity;
+        DieLayerMask = dieLayerMask;
+        StartPosition = startPosition;
+        ThrowMode = throwMode;
+    }
 }
 
+[Serializable]
+public abstract class MoveData : IMoveData
+{
+    public ThrowMode ThrowMode;
+    
+    public float TorqueStrength;
+    public float MinThrowVelocity;
+
+    public LayerMask DieLayerMask;
+    public Vector3 StartPosition;
+    
+    public abstract DieMoveData GetData();
+}
+
+[Serializable]
 public class ManualMoveData : MoveData
 {
-    
+    public float ForceMagnitude;
+    public override DieMoveData GetData()
+    {
+        return new DieMoveData()
+        {
+            ForceMagnitude = ForceMagnitude,
+            TorqueStrength = TorqueStrength,
+            MinThrowVelocity = MinThrowVelocity,
+            StartPosition = StartPosition,
+            ThrowMode = ThrowMode,
+            DieLayerMask = DieLayerMask
+        };
+    }
 }
 
+[Serializable]
 public class AutoMoveData : MoveData
 {
+    public float MaxForceMagnitude;
+    public float MinForceMagnitude;
     
+    public float RedAxisMinPos;
+    public float RedAxisMaxPos;
+    public float BlueAxisMinPos;
+    public float BlueAxisMaxPos;
+    public float Height;
+    public override DieMoveData GetData()
+    {
+        return new DieMoveData()
+        {
+            ForceMagnitude = Random.Range(MaxForceMagnitude, MinForceMagnitude),
+            TorqueStrength = TorqueStrength,
+            MinThrowVelocity = MinThrowVelocity,
+            StartPosition = new Vector3(
+                Random.Range(RedAxisMinPos, RedAxisMaxPos), 
+                Height, 
+                Random.Range(BlueAxisMinPos, BlueAxisMaxPos)),
+            ThrowMode = ThrowMode,
+            DieLayerMask = DieLayerMask
+        };
+    }
 }
 
 public class DieMovement : MonoBehaviour
@@ -34,11 +100,17 @@ public class DieMovement : MonoBehaviour
 
     public IDieAction DieAction => m_dieAction;
 
+    public IMoveData AutoMoveData => m_autoMoveData;
+
     [SerializeField]
     private DieMoveData m_dieMoveData;
     
+
     [SerializeField]
-    private DieMoveData m_dieRandomMoveData;
+    private AutoMoveData m_autoMoveData = new AutoMoveData();
+
+    [SerializeField]
+    private ManualMoveData m_manualMoveData = new ManualMoveData();
 
     private TwelveSideDieController m_twelveSideDieController;
     private Rigidbody m_rigidbody;
@@ -83,10 +155,9 @@ public class DieMovement : MonoBehaviour
         if (IsReleased)
             return;
         
-        if (!m_dieAction.Take(m_dieMoveData))
+        if (!m_dieAction.Take(m_manualMoveData.GetData()))
             return;
         
-        m_dieMoveData.StartPosition = transform.position;
         m_isHeld = true;
         Cursor.visible = false;
     }
@@ -94,7 +165,7 @@ public class DieMovement : MonoBehaviour
     private void HandleMouseUp()
     {
         m_isHeld = false;
-        m_dieAction.Release(m_dieMoveData);
+        m_dieAction.Release(m_manualMoveData.GetData());
     }
     
     private void HandleMouseDrag()
