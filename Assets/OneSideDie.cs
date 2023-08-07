@@ -12,16 +12,28 @@ public class OneSideDie : MonoBehaviour
     [SerializeField]
     private string m_numberText;
     
-    public void Init(float numberFontSize)
+    public void Init(DieData dieData)
+    {
+        var textMeshProObject = AddTextMeshProGameObject(dieData);
+        var textMeshProComponent = textMeshProObject.AddComponent<TextMeshPro>();
+        
+        SetTextMeshProComponentProperties(textMeshProComponent, dieData);
+    }
+
+    private GameObject AddTextMeshProGameObject(DieData dieData)
     {
         GameObject textMeshProObject = new GameObject(name + "_TMP");
-        textMeshProObject.transform.position = transform.position + transform.forward * 0.05f;
+        textMeshProObject.transform.position = transform.position + transform.forward * dieData.NumberAlignment;
         textMeshProObject.transform.rotation = transform.rotation * Quaternion.Euler(0, 180, 0);
         textMeshProObject.transform.SetParent(transform);
-        
-        var textMeshProComponent = textMeshProObject.AddComponent<TextMeshPro>();
+
+        return textMeshProObject;
+    }
+
+    private void SetTextMeshProComponentProperties(TMP_Text textMeshProComponent, DieData dieData)
+    {
         textMeshProComponent.text = m_numberText;
-        textMeshProComponent.fontSize = numberFontSize; 
+        textMeshProComponent.fontSize = dieData.NumberFontSize; 
         textMeshProComponent.alignment = TextAlignmentOptions.Center;
         textMeshProComponent.rectTransform.sizeDelta = new Vector3(m_numberText.Length, 1);
     }

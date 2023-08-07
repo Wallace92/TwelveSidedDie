@@ -2457,7 +2457,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef09bcec6d341349cb73b4c80b9f006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_numberFontSize: 7
+  m_dieData:
+    NumberFontSize: 7
+    NumberAlignment: 0.05
 --- !u!4 &1804681568
 Transform:
   m_ObjectHideFlags: 0
@@ -2513,7 +2515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12d34e8237bf4034081b06301d50cb3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_forceMagnitude: 5
+  m_forceMagnitude: 10
   m_torqueStrength: 50
   m_minThrowVelocity: 0.5
   m_dieLayerMask:

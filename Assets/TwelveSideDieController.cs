@@ -3,17 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[Serializable]
+public struct DieData
+{
+    public float NumberFontSize;
+    public float NumberAlignment;
+
+    public DieData(float numberFontSize, float numberAlignment)
+    {
+        NumberFontSize = numberFontSize;
+        NumberAlignment = numberAlignment;
+    }
+}
+
 public class TwelveSideDieController : MonoBehaviour
 {
-    [SerializeField]
-    private float m_numberFontSize;
-
     private List<OneSideDie> m_oneSideDices;
     
     private bool m_startMovement;
+
+    [SerializeField]
+    private DieData m_dieData;
     
     public event Action OnStartMovement;
     public event Action OnStopMovement;
+    
     private void Awake()
     {
         GetComponents();
@@ -38,7 +52,7 @@ public class TwelveSideDieController : MonoBehaviour
     }
     private void SetNumbers()
     {
-        m_oneSideDices.ForEach(oneSideDice => oneSideDice.Init(m_numberFontSize));
+        m_oneSideDices.ForEach(oneSideDice => oneSideDice.Init(m_dieData));
     }
 
     private void StartMovement()
