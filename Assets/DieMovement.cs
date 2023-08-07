@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using UnityEngine;
 
 public class DieMovement : MonoBehaviour
@@ -7,45 +7,40 @@ public class DieMovement : MonoBehaviour
     private DieMoveData m_dieMoveData;
 
     private TwelveSideDieController m_twelveSideDieController;
-
-    private Vector3 m_startPosition;
+    private IDieAction m_dieAction;
     private Rigidbody m_rigidbody;
-    
+
+    public bool IsReleased { get; set; }
+
     private bool m_isHeld;
-    private bool m_isReleased;
 
     private void Awake()
     {
+        m_dieAction = GetComponent<DieAction>();
         m_rigidbody = GetComponent<Rigidbody>();
         m_twelveSideDieController = GetComponent<TwelveSideDieController>();
     }
     
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
+        if (Input.GetMouseButtonDown(0)) 
             HandleMouseDown();
-        }
 
-        if (Input.GetMouseButtonUp(0) && m_isHeld)
-        {
+        if (Input.GetMouseButtonUp(0) && m_isHeld) 
             HandleMouseUp();
-        }
 
-        if (m_isHeld)
-        {
+        if (m_isHeld) 
             HandleMouseDrag();
-        }
     }
 
     private void FixedUpdate()
     {
-        if (!m_isReleased) 
+        if (!IsReleased) 
             return;
         
         if (m_rigidbody.velocity.sqrMagnitude < 0.0001f && m_rigidbody.angularVelocity.sqrMagnitude < 0.0001f)
         {
-            m_isReleased = false;
+            IsReleased = false;
             m_twelveSideDieController.StopRollDieMovement();
         }
     }
@@ -58,7 +53,7 @@ public class DieMovement : MonoBehaviour
         {
             m_isHeld = true;
             m_rigidbody.isKinematic = true;
-            m_startPosition = transform.position;
+            m_dieMoveData.StartPosition = transform.position;
             Cursor.visible = false;
         }
     }
@@ -66,45 +61,9 @@ public class DieMovement : MonoBehaviour
     private void HandleMouseUp()
     {
         m_isHeld = false;
-        m_rigidbody.isKinematic = false;
-        
-        var throwDirection = CalculateThrowDirection();
-        var torqueVector = Vector3.Cross(throwDirection.normalized, Vector3.down) * m_dieMoveData.TorqueStrength;
-
-        if (throwDirection.normalized.magnitude > m_dieMoveData.MinThrowVelocity)
-        {
-            m_rigidbody.AddForce(throwDirection *  throwDirection.normalized.magnitude * m_dieMoveData.ForceMagnitude, ForceMode.Impulse);
-            m_rigidbody.AddTorque(torqueVector);
-            
-            m_twelveSideDieController.StartRollDieMovement();
-            
-            StartCoroutine(StopDieMovementCoroutine());
-        }
-        else
-        {
-            ResetCubePosition();
-        }
+        m_dieAction.Release(m_dieMoveData);
     }
-
-    private IEnumerator StopDieMovementCoroutine()
-    {
-        yield return new WaitForFixedUpdate();
-
-        m_isReleased = true;
-        Cursor.visible = true;
-    }
-
-    private Vector3 CalculateThrowDirection()
-    {
-        var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
-        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
-        var worldPos = Camera.main.ScreenToWorldPoint(position);
-        
-        Vector3 throwDirection = worldPos - transform.position;
-        
-        return throwDirection;
-    }
-
+    
     private void HandleMouseDrag()
     {
         var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
@@ -129,13 +88,5 @@ public class DieMovement : MonoBehaviour
         Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, m_dieMoveData.DieLayerMask);
         
         return hit;
-    }
-    
-    private void ResetCubePosition()
-    {
-        m_rigidbody.velocity = Vector3.zero;
-        m_rigidbody.angularVelocity = Vector3.zero;
-        transform.position = m_startPosition;
-        Cursor.visible = true;
     }
 }

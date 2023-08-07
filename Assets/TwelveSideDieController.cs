@@ -11,8 +11,11 @@ public class TwelveSideDieController : MonoBehaviour
     [SerializeField]
     private DieData m_dieData;
 
+    public DieMovement DieMovement => m_dieMovement;
+    
     private List<OneSideDie> m_oneSideDices;
     private DieScores m_dieScores;
+    private DieMovement m_dieMovement;
     
     public void StartRollDieMovement() => OnStartMovement?.Invoke();
 
@@ -27,6 +30,7 @@ public class TwelveSideDieController : MonoBehaviour
     private void GetComponents()
     {
         m_dieScores = gameObject.GetComponent<DieScores>();
+        m_dieMovement = gameObject.GetComponent<DieMovement>();
         m_oneSideDices = new List<OneSideDie>(gameObject.GetComponentsInChildren<OneSideDie>()
             .ToList());
     }
