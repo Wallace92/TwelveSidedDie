@@ -4,7 +4,7 @@ using UnityEngine;
 public interface IDieAction
 {
     public void Release(DieMoveData dieMoveData);
-    public void Take(DieMoveData dieMoveData);
+    public bool Take(DieMoveData dieMoveData);
     public void Hold();
 }
 
@@ -22,9 +22,12 @@ public class DieAction: MonoBehaviour, IDieAction
 
     public void Release(DieMoveData dieMoveData)
     {
+        if (dieMoveData.ThrowMode == ThrowMode.AUTO)
+            transform.position = dieMoveData.StartPosition;
+        
         m_rigidbody.isKinematic = false;
         
-        var throwDirection = CalculateThrowDirection();
+        var throwDirection = CalculateThrowDirection(dieMoveData.ThrowMode);
         var torqueVector = Vector3.Cross(throwDirection.normalized, Vector3.down) * dieMoveData.TorqueStrength;
 
         if (throwDirection.normalized.magnitude > dieMoveData.MinThrowVelocity)
@@ -42,10 +45,14 @@ public class DieAction: MonoBehaviour, IDieAction
         }
     }
 
-    private Vector3 CalculateThrowDirection()
+    private Vector3 CalculateThrowDirection(ThrowMode throwMode)
     {
         var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
-        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
+        
+        var position = throwMode == ThrowMode.MANUAL 
+            ? new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z)
+            : new Vector3(Random.Range(100, 1800), Random.Range(100, 1000), cameraBlueAxisOffset.z);
+        
         var worldPos = Camera.main.ScreenToWorldPoint(position);
         
         Vector3 throwDirection = worldPos - transform.position;
@@ -69,14 +76,16 @@ public class DieAction: MonoBehaviour, IDieAction
         Cursor.visible = true;
     }
 
-    public void Take(DieMoveData dieMoveData)
+    public bool Take(DieMoveData dieMoveData)
     {
         RaycastHit hit  = PerformRaycastThroughDie(dieMoveData);
 
         if (hit.collider == null) 
-            return;
+            return false;
         
         m_rigidbody.isKinematic = true;
+
+        return true;
     }
 
     private RaycastHit PerformRaycastThroughDie(DieMoveData dieMoveData)

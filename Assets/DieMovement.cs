@@ -1,15 +1,48 @@
+using System;
 using UnityEngine;
+
+public interface IMoveData
+{
+    
+}
+
+[Serializable]
+public class MoveData : IMoveData
+{
+    public ThrowMode ThrowMode;
+    public float ForceMagnitude;
+    public float TorqueStrength;
+    public float MinThrowVelocity;
+
+    public LayerMask DieLayerMask;
+    public Vector3 StartPosition;
+}
+
+public class ManualMoveData : MoveData
+{
+    
+}
+
+public class AutoMoveData : MoveData
+{
+    
+}
 
 public class DieMovement : MonoBehaviour
 {
     public bool IsReleased { get; set; }
 
+    public IDieAction DieAction => m_dieAction;
+
     [SerializeField]
     private DieMoveData m_dieMoveData;
+    
+    [SerializeField]
+    private DieMoveData m_dieRandomMoveData;
 
     private TwelveSideDieController m_twelveSideDieController;
     private Rigidbody m_rigidbody;
-
+    
     private IDieAction m_dieAction;
     
     private bool m_isHeld;
@@ -47,11 +80,14 @@ public class DieMovement : MonoBehaviour
 
     private void HandleMouseDown()
     {
-        m_dieAction.Take(m_dieMoveData);
-
+        if (IsReleased)
+            return;
+        
+        if (!m_dieAction.Take(m_dieMoveData))
+            return;
+        
         m_dieMoveData.StartPosition = transform.position;
         m_isHeld = true;
-        
         Cursor.visible = false;
     }
 

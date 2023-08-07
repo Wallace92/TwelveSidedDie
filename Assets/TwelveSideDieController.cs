@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class TwelveSideDieController : MonoBehaviour
 {
@@ -11,6 +13,12 @@ public class TwelveSideDieController : MonoBehaviour
     
     [SerializeField]
     private ScorePresenter m_scorePresenter;
+    
+    [SerializeField]
+    private LayerMask m_dieLayerMask;
+
+    [SerializeField]
+    private Button m_rollBtn;
     
     [SerializeField]
     private DieData m_dieData;
@@ -41,8 +49,25 @@ public class TwelveSideDieController : MonoBehaviour
 
     private void AttachEvents()
     {
+        m_rollBtn.onClick.AddListener(AutoRelease);
+        
         OnStartMovement += m_dieScores.StartMovement;
         OnStopMovement += m_dieScores.StopMovement;
+    }
+
+    private void AutoRelease()
+    {
+        DieMoveData randomDieMoveData = new DieMoveData()
+        {
+            ForceMagnitude = Random.Range(0.1f, 2f),
+            DieLayerMask = m_dieLayerMask,
+            MinThrowVelocity = 0.5f,
+            StartPosition = new Vector3(Random.Range(-10, 10), 4, Random.Range(-10, 10)),
+            TorqueStrength = 50,
+            ThrowMode = ThrowMode.AUTO
+        };
+
+        m_dieMovement.DieAction.Release(randomDieMoveData);
     }
 
     private void Start()
@@ -61,6 +86,8 @@ public class TwelveSideDieController : MonoBehaviour
 
     private void DetachEvents()
     {
+        m_rollBtn.onClick.AddListener(AutoRelease);
+        
         OnStartMovement -= m_dieScores.StartMovement;
         OnStopMovement -= m_dieScores.StopMovement;
     }
