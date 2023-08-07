@@ -42,6 +42,33 @@ public class DieAction: MonoBehaviour, IDieAction
         }
     }
 
+    private Vector3 CalculateThrowDirection()
+    {
+        var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
+        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
+        var worldPos = Camera.main.ScreenToWorldPoint(position);
+        
+        Vector3 throwDirection = worldPos - transform.position;
+        
+        return throwDirection;
+    }
+
+    private IEnumerator StopDieMovementCoroutine()
+    {
+        yield return new WaitForFixedUpdate();
+
+        m_twelveSideDieController.DieMovement.IsReleased = true;
+        Cursor.visible = true;
+    }
+
+    private void ResetCubePosition(DieMoveData dieMoveData)
+    {
+        m_rigidbody.velocity = Vector3.zero;
+        m_rigidbody.angularVelocity = Vector3.zero;
+        transform.position = dieMoveData.StartPosition;
+        Cursor.visible = true;
+    }
+
     public void Take(DieMoveData dieMoveData)
     {
         RaycastHit hit  = PerformRaycastThroughDie(dieMoveData);
@@ -50,15 +77,6 @@ public class DieAction: MonoBehaviour, IDieAction
             return;
         
         m_rigidbody.isKinematic = true;
-    }
-
-    public void Hold()
-    {
-        var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
-        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
-        var worldPos = Camera.main.ScreenToWorldPoint(position);
-
-        transform.position = new Vector3(worldPos.x, 2f, worldPos.z);
     }
 
     private RaycastHit PerformRaycastThroughDie(DieMoveData dieMoveData)
@@ -78,30 +96,12 @@ public class DieAction: MonoBehaviour, IDieAction
         return hit;
     }
 
-    private Vector3 CalculateThrowDirection()
+    public void Hold()
     {
         var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
         var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
         var worldPos = Camera.main.ScreenToWorldPoint(position);
-        
-        Vector3 throwDirection = worldPos - transform.position;
-        
-        return throwDirection;
-    }
-    
-    private IEnumerator StopDieMovementCoroutine()
-    {
-        yield return new WaitForFixedUpdate();
 
-        m_twelveSideDieController.DieMovement.IsReleased = true;
-        Cursor.visible = true;
-    }
-    
-    private void ResetCubePosition(DieMoveData dieMoveData)
-    {
-        m_rigidbody.velocity = Vector3.zero;
-        m_rigidbody.angularVelocity = Vector3.zero;
-        transform.position = dieMoveData.StartPosition;
-        Cursor.visible = true;
+        transform.position = new Vector3(worldPos.x, 2f, worldPos.z);
     }
 }

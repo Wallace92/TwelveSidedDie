@@ -5,8 +5,12 @@ using UnityEngine;
 
 public class TwelveSideDieController : MonoBehaviour
 {
+    public ScorePresenter ScorePresenter => m_scorePresenter;
     public event Action OnStartMovement;
     public event Action OnStopMovement;
+    
+    [SerializeField]
+    private ScorePresenter m_scorePresenter;
     
     [SerializeField]
     private DieData m_dieData;
@@ -37,6 +41,7 @@ public class TwelveSideDieController : MonoBehaviour
 
     private void AttachEvents()
     {
+        OnStartMovement += m_dieScores.StartMovement;
         OnStopMovement += m_dieScores.StopMovement;
     }
 
@@ -56,6 +61,7 @@ public class TwelveSideDieController : MonoBehaviour
 
     private void DetachEvents()
     {
+        OnStartMovement -= m_dieScores.StartMovement;
         OnStopMovement -= m_dieScores.StopMovement;
     }
 }

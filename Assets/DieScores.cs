@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class DieScores : MonoBehaviour
 {
+    [SerializeField]
+    private string m_busySign;
+    
     private TwelveSideDieController m_twelveSideDieController;
 
     private void Awake()
@@ -12,8 +15,6 @@ public class DieScores : MonoBehaviour
 
     public void StopMovement()
     {
-        Debug.Log("Stop");
-        
         RaycastHit[] hits = Physics.RaycastAll(m_twelveSideDieController.transform.position, Vector3.up, 4.0f);
 
         // Sort the raycast hits based on distance from the starting position of the raycast.
@@ -28,7 +29,13 @@ public class DieScores : MonoBehaviour
             
             int topFaceNumber = topFace.GetComponent<OneSideDie>().Number;
             
-            Debug.Log("The number on the top face is: " + topFaceNumber);
+            m_twelveSideDieController.ScorePresenter.IncreaseScore(topFaceNumber);
+            m_twelveSideDieController.ScorePresenter.SetResult(topFaceNumber.ToString());
         }
+    }
+
+    public void StartMovement()
+    {
+        m_twelveSideDieController.ScorePresenter.SetResult(m_busySign);
     }
 }
