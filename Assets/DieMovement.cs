@@ -1,21 +1,11 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
-public class DieInteraction : MonoBehaviour
+public class DieMovement : MonoBehaviour
 {
     [SerializeField]
-    private float m_forceMagnitude;
+    private DieMoveData m_dieMoveData;
 
-    [SerializeField]
-    private float m_torqueStrength;
-    
-    [SerializeField]
-    private float m_minThrowVelocity = 1f;
-
-    [SerializeField]
-    private LayerMask m_dieLayerMask;
-    
     private TwelveSideDieController m_twelveSideDieController;
 
     private Vector3 m_startPosition;
@@ -79,13 +69,12 @@ public class DieInteraction : MonoBehaviour
         m_rigidbody.isKinematic = false;
         
         var throwDirection = CalculateThrowDirection();
-        var torqueVector = Vector3.Cross(throwDirection.normalized, Vector3.down) * m_torqueStrength;
+        var torqueVector = Vector3.Cross(throwDirection.normalized, Vector3.down) * m_dieMoveData.TorqueStrength;
 
-        if (throwDirection.normalized.magnitude > m_minThrowVelocity)
+        if (throwDirection.normalized.magnitude > m_dieMoveData.MinThrowVelocity)
         {
-            m_rigidbody.AddForce(throwDirection *  throwDirection.normalized.magnitude * m_forceMagnitude, ForceMode.Impulse);
+            m_rigidbody.AddForce(throwDirection *  throwDirection.normalized.magnitude * m_dieMoveData.ForceMagnitude, ForceMode.Impulse);
             m_rigidbody.AddTorque(torqueVector);
-            
             
             m_twelveSideDieController.StartRollDieMovement();
             
@@ -137,7 +126,7 @@ public class DieInteraction : MonoBehaviour
 
         Ray ray = new Ray(worldMousePosNear, worldMousePosFar - worldMousePosNear);
 
-        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, m_dieLayerMask);
+        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, m_dieMoveData.DieLayerMask);
         
         return hit;
     }
