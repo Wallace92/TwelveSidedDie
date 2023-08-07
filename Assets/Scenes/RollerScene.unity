@@ -2439,6 +2439,7 @@ GameObject:
   - component: {fileID: 1804681570}
   - component: {fileID: 1804681569}
   - component: {fileID: 1804681571}
+  - component: {fileID: 1804681572}
   m_Layer: 7
   m_Name: TwelveSidedDie
   m_TagString: Untagged
@@ -2523,6 +2524,7 @@ MonoBehaviour:
     DieLayerMask:
       serializedVersion: 2
       m_Bits: 128
+    StartPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1804681571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2533,6 +2535,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a591c49ca4504bb0a9dde72c9d8cdf2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1804681572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1804681566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9791bae003fc44d48b437fc605c74f0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1833513817

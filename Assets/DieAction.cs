@@ -4,6 +4,8 @@ using UnityEngine;
 public interface IDieAction
 {
     public void Release(DieMoveData dieMoveData);
+    public void Take(DieMoveData dieMoveData);
+    public void Hold();
 }
 
 public class DieAction: MonoBehaviour, IDieAction
@@ -39,7 +41,43 @@ public class DieAction: MonoBehaviour, IDieAction
             ResetCubePosition(dieMoveData);
         }
     }
-    
+
+    public void Take(DieMoveData dieMoveData)
+    {
+        RaycastHit hit  = PerformRaycastThroughDie(dieMoveData);
+
+        if (hit.collider == null) 
+            return;
+        
+        m_rigidbody.isKinematic = true;
+    }
+
+    public void Hold()
+    {
+        var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
+        var position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, cameraBlueAxisOffset.z);
+        var worldPos = Camera.main.ScreenToWorldPoint(position);
+
+        transform.position = new Vector3(worldPos.x, 2f, worldPos.z);
+    }
+
+    private RaycastHit PerformRaycastThroughDie(DieMoveData dieMoveData)
+    {
+        var mainCam = Camera.main;
+
+        var screenMousePosFar = new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCam.farClipPlane);
+        var screenMousePosNear = new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCam.nearClipPlane);
+
+        var worldMousePosFar = Camera.main.ScreenToWorldPoint(screenMousePosFar);
+        var worldMousePosNear = Camera.main.ScreenToWorldPoint(screenMousePosNear);
+
+        Ray ray = new Ray(worldMousePosNear, worldMousePosFar - worldMousePosNear);
+
+        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, dieMoveData.DieLayerMask);
+        
+        return hit;
+    }
+
     private Vector3 CalculateThrowDirection()
     {
         var cameraBlueAxisOffset = Camera.main.WorldToScreenPoint(transform.position);
