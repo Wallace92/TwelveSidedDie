@@ -6,6 +6,7 @@ public class ManualMoveData : MoveData
 {
     [SerializeField]
     private float m_forceMagnitude;
+    
     public override DieMoveData GetData()
     {
         return new DieMoveData()

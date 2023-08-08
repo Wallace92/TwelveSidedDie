@@ -11,12 +11,7 @@ public struct DieMoveData
     
     public Vector3 StartPosition;
 
-    public DieMoveData(float forceMagnitude, 
-        float torqueStrength, 
-        float minThrowVelocity, 
-        Vector3 startPosition, 
-        LayerMask dieLayerMask, 
-        ThrowMode throwMode)
+    public DieMoveData(float forceMagnitude, float torqueStrength, float minThrowVelocity, Vector3 startPosition, ThrowMode throwMode)
     {
         ForceMagnitude = forceMagnitude;
         TorqueStrength = torqueStrength;

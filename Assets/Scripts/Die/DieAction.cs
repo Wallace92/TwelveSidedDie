@@ -60,7 +60,7 @@ public class DieAction: MonoBehaviour, IDieAction
         
         var worldPos = Camera.main.ScreenToWorldPoint(position);
         
-        Vector3 throwDirection = worldPos - transform.position;
+        var throwDirection = worldPos - transform.position;
         
         return throwDirection;
     }
@@ -71,6 +71,7 @@ public class DieAction: MonoBehaviour, IDieAction
 
         m_twelveSideDieController.DieMovement.IsReleased = true;
         m_rollBtn.interactable = false;
+        
         Cursor.visible = true;
     }
 
@@ -78,7 +79,9 @@ public class DieAction: MonoBehaviour, IDieAction
     {
         m_rigidbody.velocity = Vector3.zero;
         m_rigidbody.angularVelocity = Vector3.zero;
+        
         transform.position = dieMoveData.StartPosition;
+        
         Cursor.visible = true;
     }
 
@@ -119,14 +122,14 @@ public class DieAction: MonoBehaviour, IDieAction
 
         transform.position = new Vector3(worldPos.x, 2f, worldPos.z);
     }
+    
+    public void StopMovement()
+    {
+        m_rollBtn.interactable = true;
+    }
 
     private void OnDestroy()
     {
         m_rollBtn.onClick.AddListener(AutoRelease);
-    }
-
-    public void StopMovement()
-    {
-        m_rollBtn.interactable = true;
     }
 }

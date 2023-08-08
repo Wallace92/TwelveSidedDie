@@ -65,5 +65,7 @@ public class TwelveSideDieController : MonoBehaviour
     {
         OnStartMovement -= m_dieScores.StartMovement;
         OnStopMovement -= m_dieScores.StopMovement;
+        
+        OnStopMovement -= m_dieAction.StopMovement;
     }
 }
