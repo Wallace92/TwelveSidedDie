@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-public interface IDieAction
-{
-    public void Release(DieMoveData dieMoveData);
-    public bool Take(LayerMask dieLayerMask);
-    public void Hold();
-}
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class DieAction: MonoBehaviour, IDieAction
 {
+    [SerializeField]
+    private Button m_rollBtn;
+    
     private Rigidbody m_rigidbody;
     
     private TwelveSideDieController m_twelveSideDieController;
@@ -18,6 +16,13 @@ public class DieAction: MonoBehaviour, IDieAction
     {
         m_rigidbody = GetComponent<Rigidbody>();
         m_twelveSideDieController = GetComponent<TwelveSideDieController>();
+        
+        m_rollBtn.onClick.AddListener(AutoRelease);
+    }
+    
+    private void AutoRelease()
+    {
+        Release(m_twelveSideDieController.DieMovement.AutoMoveData.GetData());
     }
 
     public void Release(DieMoveData dieMoveData)
@@ -65,6 +70,7 @@ public class DieAction: MonoBehaviour, IDieAction
         yield return new WaitForFixedUpdate();
 
         m_twelveSideDieController.DieMovement.IsReleased = true;
+        m_rollBtn.interactable = false;
         Cursor.visible = true;
     }
 
@@ -112,5 +118,15 @@ public class DieAction: MonoBehaviour, IDieAction
         var worldPos = Camera.main.ScreenToWorldPoint(position);
 
         transform.position = new Vector3(worldPos.x, 2f, worldPos.z);
+    }
+
+    private void OnDestroy()
+    {
+        m_rollBtn.onClick.AddListener(AutoRelease);
+    }
+
+    public void StopMovement()
+    {
+        m_rollBtn.interactable = true;
     }
 }

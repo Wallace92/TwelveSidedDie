@@ -19,8 +19,7 @@ public class DieScores : MonoBehaviour
     public void StopMovement()
     {
         RaycastHit[] hits = Physics.RaycastAll(m_twelveSideDieController.transform.position, Vector3.up, 4.0f);
-
-        // Sort the raycast hits based on distance from the starting position of the raycast.
+        
         Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
 
         if (hits.Length > 0)

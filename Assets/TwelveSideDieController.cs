@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TwelveSideDieController : MonoBehaviour
 {
@@ -12,12 +11,11 @@ public class TwelveSideDieController : MonoBehaviour
     public DieMovement DieMovement => m_dieMovement;
 
     [SerializeField]
-    private Button m_rollBtn;
-    
-    [SerializeField]
     private DieData m_dieData;
     
     private List<OneSideDie> m_oneSideDices;
+    
+    private DieAction m_dieAction;
     private DieScores m_dieScores;
     private DieMovement m_dieMovement;
     
@@ -35,21 +33,18 @@ public class TwelveSideDieController : MonoBehaviour
     {
         m_dieScores = gameObject.GetComponent<DieScores>();
         m_dieMovement = gameObject.GetComponent<DieMovement>();
+        m_dieAction = gameObject.GetComponent<DieAction>();
+        
         m_oneSideDices = new List<OneSideDie>(gameObject.GetComponentsInChildren<OneSideDie>()
             .ToList());
     }
 
     private void AttachEvents()
     {
-        m_rollBtn.onClick.AddListener(AutoRelease);
-        
         OnStartMovement += m_dieScores.StartMovement;
         OnStopMovement += m_dieScores.StopMovement;
-    }
-
-    private void AutoRelease()
-    {
-        m_dieMovement.DieAction.Release(m_dieMovement.AutoMoveData.GetData());
+        
+        OnStopMovement += m_dieAction.StopMovement;
     }
 
     private void Start()
@@ -68,8 +63,6 @@ public class TwelveSideDieController : MonoBehaviour
 
     private void DetachEvents()
     {
-        m_rollBtn.onClick.AddListener(AutoRelease);
-        
         OnStartMovement -= m_dieScores.StartMovement;
         OnStopMovement -= m_dieScores.StopMovement;
     }

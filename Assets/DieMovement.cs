@@ -5,8 +5,6 @@ public class DieMovement : MonoBehaviour
 {
     public bool IsReleased { get; set; }
 
-    public IDieAction DieAction => m_dieAction;
-
     public IMoveData AutoMoveData => m_autoMoveData;
     
     [SerializeField]
