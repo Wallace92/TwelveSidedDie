@@ -13,9 +13,6 @@ public class TwelveSideDieController : MonoBehaviour
     
     [SerializeField]
     private ScorePresenter m_scorePresenter;
-    
-    [SerializeField]
-    private LayerMask m_dieLayerMask;
 
     [SerializeField]
     private Button m_rollBtn;

@@ -4,7 +4,7 @@ using UnityEngine;
 public interface IDieAction
 {
     public void Release(DieMoveData dieMoveData);
-    public bool Take(DieMoveData dieMoveData);
+    public bool Take(LayerMask dieLayerMask);
     public void Hold();
 }
 
@@ -76,9 +76,9 @@ public class DieAction: MonoBehaviour, IDieAction
         Cursor.visible = true;
     }
 
-    public bool Take(DieMoveData dieMoveData)
+    public bool Take(LayerMask dieLayerMask)
     {
-        RaycastHit hit  = PerformRaycastThroughDie(dieMoveData);
+        RaycastHit hit  = PerformRaycastThroughDie(dieLayerMask);
 
         if (hit.collider == null) 
             return false;
@@ -88,7 +88,7 @@ public class DieAction: MonoBehaviour, IDieAction
         return true;
     }
 
-    private RaycastHit PerformRaycastThroughDie(DieMoveData dieMoveData)
+    private RaycastHit PerformRaycastThroughDie(LayerMask dieLayerMask)
     {
         var mainCam = Camera.main;
 
@@ -100,7 +100,7 @@ public class DieAction: MonoBehaviour, IDieAction
 
         Ray ray = new Ray(worldMousePosNear, worldMousePosFar - worldMousePosNear);
 
-        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, dieMoveData.DieLayerMask);
+        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, dieLayerMask);
         
         return hit;
     }
