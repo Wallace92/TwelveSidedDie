@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public class DieMovement : MonoBehaviour
 {
     public bool IsReleased { get; set; }

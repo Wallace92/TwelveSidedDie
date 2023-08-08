@@ -1438,7 +1438,7 @@ Transform:
   m_GameObject: {fileID: 941575456}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 13.37, y: 0, z: -0}
+  m_LocalPosition: {x: 14, y: 0, z: -0}
   m_LocalScale: {x: 25, y: 40, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1869,7 +1869,7 @@ Transform:
   m_GameObject: {fileID: 1148644701}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -13.58, y: 0, z: 0}
+  m_LocalPosition: {x: -14, y: 0, z: 0}
   m_LocalScale: {x: 25, y: 40, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2878,8 +2878,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef09bcec6d341349cb73b4c80b9f006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_scorePresenter: {fileID: 1824196939}
-  m_rollBtn: {fileID: 1530736269}
   m_dieData:
     NumberFontSize: 7
     NumberAlignment: 0.05
@@ -2969,6 +2967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a591c49ca4504bb0a9dde72c9d8cdf2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_scorePresenter: {fileID: 1824196939}
   m_busySign: '?'
 --- !u!114 &1804681572
 MonoBehaviour:
@@ -2982,6 +2981,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9791bae003fc44d48b437fc605c74f0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rollBtn: {fileID: 1530736269}
 --- !u!1 &1824196938
 GameObject:
   m_ObjectHideFlags: 0
