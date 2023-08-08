@@ -3,16 +3,6 @@ using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using UnityEngine;
 
-public interface INotifyPropertyChanged
-{
-    event PropertyChangedEventHandler PropertyChange;
-}
-
-public interface IScore
-{
-    public int ScoreIncrement { get;}
-}
-
 public class Model : MonoBehaviour, INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChange;
