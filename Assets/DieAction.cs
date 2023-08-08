@@ -37,7 +37,7 @@ public class DieAction: MonoBehaviour, IDieAction
             
             m_twelveSideDieController.StartRollDieMovement();
             
-            StartCoroutine(StopDieMovementCoroutine());
+            StartCoroutine(StartDieMovementCoroutine());
         }
         else
         {
@@ -60,7 +60,7 @@ public class DieAction: MonoBehaviour, IDieAction
         return throwDirection;
     }
 
-    private IEnumerator StopDieMovementCoroutine()
+    private IEnumerator StartDieMovementCoroutine()
     {
         yield return new WaitForFixedUpdate();
 

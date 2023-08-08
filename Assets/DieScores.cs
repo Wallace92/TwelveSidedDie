@@ -4,6 +4,9 @@ using UnityEngine;
 public class DieScores : MonoBehaviour
 {
     [SerializeField]
+    private ScorePresenter m_scorePresenter;
+    
+    [SerializeField]
     private string m_busySign;
     
     private TwelveSideDieController m_twelveSideDieController;
@@ -29,13 +32,13 @@ public class DieScores : MonoBehaviour
             
             int topFaceNumber = topFace.GetComponent<OneSideDie>().Number;
             
-            m_twelveSideDieController.ScorePresenter.IncreaseScore(topFaceNumber);
-            m_twelveSideDieController.ScorePresenter.SetResult(topFaceNumber.ToString());
+            m_scorePresenter.IncreaseScore(topFaceNumber);
+            m_scorePresenter.SetResult(topFaceNumber.ToString());
         }
     }
 
     public void StartMovement()
     {
-        m_twelveSideDieController.ScorePresenter.SetResult(m_busySign);
+        m_scorePresenter.SetResult(m_busySign);
     }
 }

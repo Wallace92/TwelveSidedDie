@@ -3,24 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public class TwelveSideDieController : MonoBehaviour
 {
-    public ScorePresenter ScorePresenter => m_scorePresenter;
     public event Action OnStartMovement;
     public event Action OnStopMovement;
     
-    [SerializeField]
-    private ScorePresenter m_scorePresenter;
+    public DieMovement DieMovement => m_dieMovement;
 
     [SerializeField]
     private Button m_rollBtn;
     
     [SerializeField]
     private DieData m_dieData;
-
-    public DieMovement DieMovement => m_dieMovement;
     
     private List<OneSideDie> m_oneSideDices;
     private DieScores m_dieScores;
